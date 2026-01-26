@@ -15,6 +15,20 @@ This document contains performance benchmarks for QHTTPX, demonstrating its high
 
 > *On a high-performance Linux server, QHTTPX serves over 111k requests per second, outperforming Fastify by nearly 3x and Express by nearly 4x.*
 
+## Single Instance Performance (Linux)
+
+**Command**: `npm run benchmark:qhttpx`
+**Environment**: Linux, 12 vCPU, 10GB RAM
+**Test**: 40s, 100 connections, 50 pipelining
+
+| Metric | Value |
+| :--- | :--- |
+| **Requests / Sec** | **114,556.80** |
+| **Latency (Avg)** | **44.08 ms** |
+| **Latency (p50)** | **38 ms** |
+| **Latency (p99)** | **82 ms** |
+| **Throughput** | **48.62 MB/s** |
+
 ## Windows Environment (Legacy)
 
 The benchmarks below were conducted on the following hardware configuration:

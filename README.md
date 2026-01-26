@@ -21,25 +21,25 @@ QHTTPX is a next-generation web framework that combines the **developer experien
 
 QHTTPX significantly outperforms traditional Node.js frameworks in high-throughput scenarios.
 
-### Linux High-Performance Environment
-**Environment**: Linux, 12 vCPU, 10GB RAM
-
-| Framework | Req/Sec | Latency (Avg) | Multiplier |
-| :--- | :--- | :--- | :--- |
-| **Express** | 28,888 | 179.11 ms | 1.0x |
-| **Koa** | 33,168 | 156.81 ms | 1.15x |
-| **Fastify** | 40,760 | 125.75 ms | 1.41x |
-| **QHTTPX** | **111,828** | **45.25 ms** | **3.87x** |
-
-### Windows Dev Environment
 **Environment**: Windows, 2 vCPU, 8GB RAM
+
+### Throughput (Requests/Sec)
 
 | Framework | Req/Sec | Multiplier |
 | :--- | :--- | :--- |
-| **Express** | 9,094 | 1.0x |
+| **Express** | 9,094 | 1.0x (Baseline) |
 | **Koa** | 11,381 | 1.25x |
 | **Fastify** | 12,265 | 1.35x |
 | **QHTTPX** | **45,136** | **4.96x** |
+
+### Latency (Average)
+
+| Framework | Latency |
+| :--- | :--- |
+| **Express** | 639.72 ms |
+| **Koa** | 504.44 ms |
+| **Fastify** | 454.32 ms |
+| **QHTTPX** | **268.09 ms** |
 
 ### Extreme Load Stability (C10K)
 
