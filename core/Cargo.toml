@@ -1,0 +1,44 @@
+[package]
+name = "qhttpx-core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+napi = { version = "2.16", features = ["tokio_rt", "napi4", "serde-json"] }
+napi-derive = "2.16"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.36", features = ["full"] }
+hyper = { version = "1.2", features = ["full"] }
+hyper-util = { version = "0.1", features = ["full"] }
+http-body-util = "0.1"
+bytes = "1.5"
+matchit = "0.8"
+tokio-util = { version = "0.7.18", features = ["io"] }
+futures-util = "0.3.31"
+tokio-tungstenite = { version = "0.28.0", features = ["native-tls"] }
+async-compression = { version = "0.4.37", features = ["tokio", "gzip", "brotli"] }
+multer = "3.1.0"
+mime_guess = "2.0.5"
+dashmap = "6.1.0"
+rustls = "0.23"
+tokio-rustls = "0.26"
+rustls-pemfile = "2.1"
+jsonwebtoken = "9.2"
+redis = { version = "0.24", features = ["tokio-comp"] }
+sqlx = { version = "0.7", features = ["runtime-tokio-rustls", "postgres", "sqlite", "macros"] }
+mongodb = { version = "2.8.0", features = ["tokio-runtime"] }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+jsonschema = "0.40.0"
+
+[build-dependencies]
+napi-build = "2.1"
+
+[profile.release]
+lto = true
+strip = true
+codegen-units = 1

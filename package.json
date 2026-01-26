@@ -1,0 +1,61 @@
+{
+  "name": "qhttpx",
+  "version": "0.1.1",
+  "description": "The AI-Native High-Performance Web Engine",
+  "bin": {
+    "qhttpx": "./dist/cli.js"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "npm run build:core && tsup src/index.ts src/cli.ts --format cjs,esm --dts --clean",
+    "build:core": "cd core && npx napi build --platform --release --dts index.d.ts && cd .. && node scripts/fix-core-types.js",
+    "test": "vitest",
+    "lint": "eslint src/**",
+    "analyze": "ts-node tools/analyze.ts",
+    "benchmark": "tsx bench/comparison.ts",
+    "benchmark:qhttpx": "tsx bench/qhttpx-server.ts"
+  },
+  "keywords": [
+    "http",
+    "framework",
+    "rust",
+    "ai",
+    "performance",
+    "web"
+  ],
+  "author": "QHTTPX Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@napi-rs/cli": "^3.5.1",
+    "@types/autocannon": "^7.12.7",
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.18.1",
+    "autocannon": "^8.0.0",
+    "fastify": "^5.7.1",
+    "tsup": "^8.0.0",
+    "tsx": "^4.21.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0",
+    "ws": "^8.19.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@fastify/static": "^9.0.0",
+    "@koa/router": "^15.2.0",
+    "@types/bcryptjs": "^2.4.6",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/koa": "^3.0.1",
+    "bcryptjs": "^3.0.3",
+    "chokidar": "^5.0.0",
+    "commander": "^14.0.2",
+    "express": "^5.2.1",
+    "fast-json-stringify": "^6.2.0",
+    "jsonwebtoken": "^9.0.3",
+    "koa": "^3.1.1",
+    "picocolors": "^1.1.1"
+  }
+}

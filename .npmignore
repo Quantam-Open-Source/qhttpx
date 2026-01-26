@@ -1,0 +1,13 @@
+core/target
+sample-app
+src
+scripts
+bench
+examples
+.github
+.git
+tools
+*.log
+coverage
+test.db
+qhttpx-*.tgz
