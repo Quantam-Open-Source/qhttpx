@@ -158,4 +158,4 @@ docker run -p 3000:3000 my-app
 
 ## License
 
-MIT
+Apache-2.0
