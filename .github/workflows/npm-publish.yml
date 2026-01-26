@@ -89,6 +89,11 @@ jobs:
         # Note: This might rebuild the linux binary, but we have all binaries in core/ now.
         # tsup will build the dist folder.
 
+      - name: Move Binaries to Dist
+        run: |
+          mkdir -p dist
+          cp core/*.node dist/
+
       - name: Publish
         run: npm publish
         env:
