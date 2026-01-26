@@ -1,12 +1,16 @@
-# QHTTPX
+<div align="center">
+  <img src="assets/qhttpx.svg" alt="QHTTPX Logo" width="180" height="auto" />
+  <h1>QHTTPX</h1>
+  <p>
+    <b>The AI-Native High-Performance Web Engine</b>
+  </p>
+</div>
 
 [![Website](https://img.shields.io/badge/website-qhttpx.gridrr.com-blue?style=flat&logo=google-chrome&logoColor=white)](https://qhttpx.gridrr.com)
 [![npm version](https://img.shields.io/npm/v/qhttpx.svg?style=flat)](https://www.npmjs.com/package/qhttpx)
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Downloads](https://img.shields.io/npm/dm/qhttpx.svg)](https://www.npmjs.com/package/qhttpx)
 [![GitHub stars](https://img.shields.io/github/stars/Quantam-Open-Source/QHTTPX.svg?style=social)](https://github.com/Quantam-Open-Source/QHTTPX)
-
-**The AI-Native High-Performance Web Engine**
 
 QHTTPX is a next-generation web framework that combines the **developer experience of Node.js** with the **raw performance of Rust**. It is designed for high-load applications, AI agents, and distributed systems where latency and throughput are critical.
 
