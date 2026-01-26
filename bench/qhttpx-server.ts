@@ -23,7 +23,7 @@ async function runBenchmark() {
         console.log(`\nStarting benchmark for QHTTPX on port ${PORT}...`);
         const instance = autocannon({
             url: `http://localhost:${PORT}`,
-            connections: 1000,
+            connections: 100,
             pipelining: 50,
             duration: 40,
             latency: {
