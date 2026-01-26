@@ -34,6 +34,13 @@
       "./qhttpx-core-new.darwin-arm64.node"
     ]
   },
+  "files": [
+    "dist",
+    "examples",
+    "README.md",
+    "LICENSE",
+    "package.json"
+  ],
   "keywords": [
     "http",
     "framework",

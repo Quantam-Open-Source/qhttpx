@@ -41,5 +41,6 @@ napi-build = "2.1"
 
 [profile.release]
 lto = true
-strip = true
+strip = "symbols"
 codegen-units = 1
+opt-level = "z"

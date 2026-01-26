@@ -50,6 +50,10 @@ jobs:
         run: |
           cd core
           npx napi build --target ${{ matrix.settings.target }} --release
+          # Strip symbols if platform supports it
+          if [ "${{ matrix.settings.host }}" == "ubuntu-latest" ]; then
+            strip *.node
+          fi
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
