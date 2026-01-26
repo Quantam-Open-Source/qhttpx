@@ -15,16 +15,38 @@ QHTTPX is a next-generation web framework that combines the **developer experien
 
 QHTTPX significantly outperforms traditional Node.js frameworks in high-throughput scenarios.
 
-**Environment**: Windows, 2 vCPU, 4GB RAM
+**Environment**: Windows, 2 vCPU, 8GB RAM
 
-| Framework | Requests/Sec | Total Requests (10s) | Relative Performance |
-|-----------|--------------|----------------------|----------------------|
-| **QHTTPX**| **~28,624**  | **257,620**          | **4.64x**            |
-| Fastify   | ~9,965       | 99,640               | 1.62x                |
-| Koa       | ~8,923       | 89,230               | 1.45x                |
-| Express   | ~6,164       | 61,640               | 1.0x (Baseline)      |
+### Throughput (Requests/Sec)
 
-*Benchmark run on standard hardware (100 connections, 10 pipelining). Note: Fastify performance without schema optimization is comparable to Express.*
+| Framework | Req/Sec | Multiplier |
+| :--- | :--- | :--- |
+| **Express** | 9,094 | 1.0x (Baseline) |
+| **Koa** | 11,381 | 1.25x |
+| **Fastify** | 12,265 | 1.35x |
+| **QHTTPX** | **45,136** | **4.96x** |
+
+### Latency (Average)
+
+| Framework | Latency |
+| :--- | :--- |
+| **Express** | 639.72 ms |
+| **Koa** | 504.44 ms |
+| **Fastify** | 454.32 ms |
+| **QHTTPX** | **268.09 ms** |
+
+### Extreme Load Stability (C10K)
+
+We simulated **10,000 concurrent connections** to test resilience.
+
+| Framework | Status | Total Requests Served | Notes |
+| :--- | :--- | :--- | :--- |
+| **Express** | ❌ FAILED | 0 | 100% Timeout / Errors |
+| **Koa** | ❌ FAILED | 0 | 100% Timeout / Errors |
+| **Fastify** | ❌ FAILED | 0 | 100% Timeout / Errors |
+| **QHTTPX** | **✅ PASS** | **147,930** | **Zero crashes**, 200ms latency |
+
+> *See full benchmark details in [docs/benchmarks.md](./docs/benchmarks.md)*
 
 ## 📦 Installation
 
