@@ -175,6 +175,7 @@ export interface FluentBuilder {
     verifyPassword(field?: string): this;
     jwt(options?: { secret?: string, expiresIn?: string }): this;
     respond(status?: number): void;
+    respond(handler: Handler): void;
     
     // Extended Fluent API
     secure(): this;
@@ -226,26 +227,31 @@ export interface App {
     };
 
     // GET
-    get(path: string, config: RouteConfig): RouteBuilder;
-    get(path: string, handler: Handler): RouteBuilder;
-    get(path: string): RouteBuilder;
+    get(path: string, config: RouteConfig): Route;
+    get(path: string, handler: Handler): Route;
+    get(path: string, options: RouteOptions, handler: Handler): Route;
+    get(path: string): FluentBuilder;
 
     // POST
-    post(path: string, config: RouteConfig): RouteBuilder;
-    post(path: string, handler: Handler): RouteBuilder;
-    post(path: string): RouteBuilder;
+    post(path: string, config: RouteConfig): Route;
+    post(path: string, handler: Handler): Route;
+    post(path: string, options: RouteOptions, handler: Handler): Route;
+    post(path: string): FluentBuilder;
 
     // PUT
-    put(path: string, config: RouteConfig): RouteBuilder;
-    put(path: string, handler: Handler): RouteBuilder;
-    put(path: string): RouteBuilder;
+    put(path: string, config: RouteConfig): Route;
+    put(path: string, handler: Handler): Route;
+    put(path: string, options: RouteOptions, handler: Handler): Route;
+    put(path: string): FluentBuilder;
 
     // DELETE
-    delete(path: string, config: RouteConfig): RouteBuilder;
-    delete(path: string, handler: Handler): RouteBuilder;
-    delete(path: string): RouteBuilder;
+    delete(path: string, config: RouteConfig): Route;
+    delete(path: string, handler: Handler): Route;
+    delete(path: string, options: RouteOptions, handler: Handler): Route;
+    delete(path: string): FluentBuilder;
 
     // Core
+    addRoute(method: string, path: string): Route;
     listen(port: number, callback?: () => void): void;
     listen(options: ListenOptions): void;
     stop(): void;

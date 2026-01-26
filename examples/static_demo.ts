@@ -19,9 +19,9 @@ fs.writeFileSync(path.join(publicDir, '1mb.dat'), buffer);
 // Serve static files
 app.static('/public', './examples/public');
 
-app.get('/', (c: any) => {
-    return c.send({ hello: 'world' });
-});
+app.get('/')
+   .use(() => ({ hello: 'world' }))
+   .respond();
 
 app.listen(PORT, () => {
     console.log(`Static File Server running on port ${PORT}`);

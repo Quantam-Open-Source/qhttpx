@@ -39,9 +39,9 @@ app.cors({
     credentials: true // Allow cookies/auth headers
 });
 
-app.get('/api/data', (ctx) => {
-    return ctx.send({ data: 'Accessible from localhost:3000' });
-});
+app.get('/api/data')
+   .use(() => ({ data: 'Accessible from localhost:3000' }))
+   .respond();
 
 app.listen(4000);
 ```

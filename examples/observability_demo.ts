@@ -7,13 +7,15 @@ const app = Q.app();
 // Run with RUST_LOG=info node observability_demo.js
 app.enableLogging();
 
-app.get('/', (c) => {
-    return c.send({ message: "Hello Observability" });
-});
+app.get('/')
+   .use(() => ({ message: "Hello Observability" }))
+   .respond();
 
-app.get('/error', (c) => {
-    throw new Error("Something went wrong");
-});
+app.get('/error')
+   .use(() => {
+       throw new Error("Something went wrong");
+   })
+   .respond();
 
 // 2. Metrics are automatically exposed at /metrics
 // Try: curl http://localhost:3000/metrics

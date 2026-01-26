@@ -19,35 +19,40 @@ const SECRET = 'native-super-secret-key-123';
 // the connection might fail, but the architecture is valid.
 const PG_URL = "postgres://user:pass@localhost:5432/mydb";
 
-app.get('/public', (c) => {
-    return c.send({ message: "Public Access OK" });
-});
+app.get('/public')
+   .use(() => ({ message: "Public Access OK" }))
+   .respond();
 
 // Protected Route (Native JWT Check)
 // If the token is invalid, Rust rejects it. Node.js never sees the request.
-app.get('/protected', (c) => {
-    return c.send({ message: "You have valid Native JWT!" });
-})
-.jwt(); // Enable Native JWT Policy
+app.get('/protected')
+   .jwt() // Enable Native JWT Policy
+   .use(() => ({ message: "You have valid Native JWT!" }))
+   .respond();
 
 // Database Route
-app.get('/users', async (c) => {
-    // This executes SQL in Rust and returns JSON string directly
-    // Zero serialization overhead in Node.js!
-    try {
-        const result = await app.db.query("SELECT * FROM users");
-        // Result is a JSON string string from Rust
-        return c.send(JSON.parse(result));
-    } catch (e: any) {
-        return c.send({ error: e.message });
-    }
-});
+app.get('/users')
+   .use(async (ctx) => {
+       // This executes SQL in Rust and returns JSON string directly
+       // Zero serialization overhead in Node.js!
+       try {
+           const result = await app.db.query("SELECT * FROM users");
+           // Result is a JSON string string from Rust
+           return JSON.parse(result);
+       } catch (e: any) {
+           // Fluent API handles errors if we throw with status
+           throw { status: 500, message: e.message };
+       }
+   })
+   .respond();
 
 // Helper to generate token for testing
-app.get('/login', (c) => {
-    const token = jsonwebtoken.sign({ sub: 'user123' }, SECRET, { expiresIn: '1h' });
-    return c.send({ token });
-});
+app.get('/login')
+   .use(() => {
+       const token = jsonwebtoken.sign({ sub: 'user123' }, SECRET, { expiresIn: '1h' });
+       return { token };
+   })
+   .respond();
 
 app.listen(3000, () => {
     console.log('Server running on http://localhost:3000');

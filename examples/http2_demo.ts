@@ -5,9 +5,9 @@ import http from 'http';
 
 const app = Q.app();
 
-app.get('/h2', (c) => {
-    c.send('Hello from QHTTPX!');
-});
+app.get('/h2')
+   .use(() => 'Hello from QHTTPX!')
+   .respond();
 
 app.listen(3003, async () => {
     console.log('Server listening on port 3003');

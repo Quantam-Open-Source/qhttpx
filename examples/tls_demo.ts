@@ -16,9 +16,9 @@ if (!fs.existsSync(certPath) || !fs.existsSync(keyPath)) {
     process.exit(1);
 }
 
-app.get('/', (c) => {
-    return c.send({ message: "Secure Hello from Native HTTP/2!" });
-});
+app.get('/')
+   .use(() => ({ message: "Secure Hello from Native HTTP/2!" }))
+   .respond();
 
 app.listen({
     port: 3000,

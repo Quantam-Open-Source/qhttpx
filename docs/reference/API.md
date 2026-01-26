@@ -52,13 +52,47 @@ Starts the server on the specified port.
 
 ## Routing
 
-### `app.get(path, options?, handler?)`
-### `app.post(path, options?, handler?)`
-### `app.put(path, options?, handler?)`
-### `app.delete(path, options?, handler?)`
-### `app.patch(path, options?, handler?)`
+### Fluent API (Recommended)
 
-Define routes with optional configuration.
+The fluent API allows for chainable route configuration, providing a clean and readable way to define routes.
+
+#### `app.get(path)`
+#### `app.post(path)`
+#### `app.put(path)`
+#### `app.delete(path)`
+#### `app.patch(path)`
+
+Returns a `FluentBuilder` instance for chaining configuration.
+
+**Builder Methods:**
+
+*   `.use(handler)`: Define the route handler.
+    ```typescript
+    (ctx: RequestContext, state: any) => Promise<any> | any
+    ```
+*   `.desc(description)`: Add a description for API documentation.
+*   `.status(code)`: Set the default HTTP status code.
+*   `.respond()`: Finalize and register the route. **Required**.
+
+**Example:**
+
+```typescript
+app.get('/users/:id')
+   .desc('Get user by ID')
+   .use((ctx, state) => {
+       const userId = state.params.id;
+       return { id: userId, role: 'admin' };
+   })
+   .respond();
+```
+
+### Imperative API
+
+Classic style for defining routes with options and a handler function.
+
+#### `app.get(path, options?, handler)`
+#### `app.post(path, options?, handler)`
+...
 
 **Options:**
 
@@ -68,7 +102,7 @@ interface RouteOptions {
     json?: any;
     
     // Enable JWT authentication for this route
-    auth?: boolean;
+    jwt?: boolean;
     
     // Rate limiting configuration
     rateLimit?: {
@@ -82,14 +116,14 @@ interface RouteOptions {
 **Handler:**
 
 ```typescript
-(req: Request, res: Response) => Promise<any> | any
+(ctx: RequestContext) => Promise<any> | any
 ```
 
 **Example:**
 
 ```typescript
-app.post('/users', { auth: true }, async (req) => {
-    const user = req.body;
+app.post('/users', { jwt: true }, async (ctx) => {
+    const user = await ctx.json();
     await app.db.query('INSERT INTO users ...', [user.name]);
     return { success: true };
 });

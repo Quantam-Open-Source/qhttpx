@@ -36,6 +36,8 @@ export class FluentBuilder {
     private requestSchema?: any;
     private responseSchemaDef?: any;
     private queryBuilder?: (q: any) => void;
+    private rateLimitOptions?: { limit: number; window: number };
+    private cacheOptions?: { ttl: number; key?: string };
 
     constructor(private app: App, private method: string, private path: string) {}
 
@@ -65,6 +67,7 @@ export class FluentBuilder {
     }
 
     cache(options: { ttl: number; key?: string }): this {
+        this.cacheOptions = options;
         // Store cache options for documentation
         this.steps.push({
             name: 'cache',
@@ -77,6 +80,7 @@ export class FluentBuilder {
     }
 
     rateLimit(options: { limit: number; window: number }): this {
+        this.rateLimitOptions = options;
         // Store rate limit options for documentation
         this.steps.push({
             name: 'rateLimit',
@@ -384,7 +388,11 @@ export class FluentBuilder {
         // FluentBuilder interface: .respond(status?: number)
         const status = handlerOrStatus as number;
         const handler = async (ctx: RequestContext) => {
-            let state: any = {};
+            let state: any = {
+                params: ctx.params || {},
+                query: ctx.query || {}
+            };
+            
             let finalStatus = status;
             
             try {
@@ -410,10 +418,10 @@ export class FluentBuilder {
                 ctx.json({ error: message }, status);
             }
         };
-
-        // Register with App
-        // @ts-ignore - accessing private routes
-        const route = this.app[this.method.toLowerCase()](this.path, handler);
+        
+        // Register with App directly to get the Route object
+        const route = this.app.addRoute(this.method, this.path);
+        route.handler = handler;
         
         // Apply options
         this.applyOptionsToRoute(route);
@@ -428,6 +436,12 @@ export class FluentBuilder {
         }
         if (this.queryBuilder) {
             route.query(this.queryBuilder);
+        }
+        if (this.rateLimitOptions) {
+            route.rateLimit(this.rateLimitOptions);
+        }
+        if (this.cacheOptions) {
+            route.cache(this.cacheOptions);
         }
         // Apply other options collected in steps if possible, 
         // but currently steps are executed at runtime. 

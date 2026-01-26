@@ -27,15 +27,17 @@ app.listen(3000, () => {
 Execute raw SQL queries with zero serialization overhead in Node.js.
 
 ```typescript
-app.get('/users', async (c) => {
-    try {
-        // Result is returned as a pre-serialized JSON string from Rust
-        const result = await app.db.query("SELECT * FROM users");
-        return c.send(JSON.parse(result));
-    } catch (e: any) {
-        return c.send({ error: e.message });
-    }
-});
+app.get('/users')
+   .use(async (ctx) => {
+       try {
+           // Result is returned as a pre-serialized JSON string from Rust
+           const result = await app.db.query("SELECT * FROM users");
+           return JSON.parse(result);
+       } catch (e: any) {
+           throw { status: 500, message: e.message };
+       }
+   })
+   .respond();
 ```
 
 #### Caching Queries

@@ -10,13 +10,13 @@ app.cors({
     credentials: true
 });
 
-app.get('/', (c) => {
-    return c.send({ message: 'Hello with CORS!' });
-});
+app.get('/')
+   .use(() => ({ message: 'Hello with CORS!' }))
+   .respond();
 
-app.post('/data', (c) => {
-    return c.send({ status: 'received' });
-});
+app.post('/data')
+   .use(() => ({ status: 'received' }))
+   .respond();
 
 const PORT = 4000;
 app.listen(PORT, () => {

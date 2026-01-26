@@ -538,110 +538,118 @@ class App implements AppInterface {
     }
 
     // Fluent API Interface - HTTP methods return FluentBuilder for intuitive chaining
-    get(path: string, config: RouteConfig): FluentBuilder;
-    get(path: string, handler: Handler): FluentBuilder;
-    get(path: string, options: RouteOptions, handler: Handler): FluentBuilder;
+    get(path: string, config: RouteConfig): Route;
+    get(path: string, handler: Handler): Route;
+    get(path: string, options: RouteOptions, handler: Handler): Route;
     get(path: string): FluentBuilder;
-    get(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder {
-        const fluentBuilder = new FluentBuilder(this, 'GET', path);
-        
+    get(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder | Route {
         if (arg3) {
             // For options + handler pattern, we need to configure the underlying route
             const route = this.addRoute('GET', path);
             route.options = arg2 as RouteOptions;
             route.handler = arg3;
+            return route;
         } else if (arg2) {
             const route = this.addRoute('GET', path);
             if (typeof arg2 === 'function') {
                 route.handler = arg2;
+                return route;
             } else if ('json' in arg2 || 'text' in arg2 || 'upload' in arg2) {
                 route.routeConfig = arg2;
+                return route;
             } else {
                 route.options = arg2;
+                return route;
             }
         }
         
-        return fluentBuilder;
+        return new FluentBuilder(this, 'GET', path);
     }
 
 
 
-    post(path: string, config: RouteConfig): FluentBuilder;
-    post(path: string, handler: Handler): FluentBuilder;
-    post(path: string, options: RouteOptions, handler: Handler): FluentBuilder;
+    post(path: string, config: RouteConfig): Route;
+    post(path: string, handler: Handler): Route;
+    post(path: string, options: RouteOptions, handler: Handler): Route;
     post(path: string): FluentBuilder;
-    post(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder {
-        const fluentBuilder = new FluentBuilder(this, 'POST', path);
-        
+    post(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder | Route {
         if (arg3) {
             const route = this.addRoute('POST', path);
             route.options = arg2 as RouteOptions;
             route.handler = arg3;
+            return route;
         } else if (arg2) {
             const route = this.addRoute('POST', path);
             if (typeof arg2 === 'function') {
                 route.handler = arg2;
+                return route;
             } else if ('json' in arg2 || 'text' in arg2 || 'upload' in arg2) {
                 route.routeConfig = arg2;
+                return route;
             } else {
                 route.options = arg2;
+                return route;
             }
         }
         
-        return fluentBuilder;
+        return new FluentBuilder(this, 'POST', path);
     }
 
-    put(path: string, config: RouteConfig): FluentBuilder;
-    put(path: string, handler: Handler): FluentBuilder;
-    put(path: string, options: RouteOptions, handler: Handler): FluentBuilder;
+    put(path: string, config: RouteConfig): Route;
+    put(path: string, handler: Handler): Route;
+    put(path: string, options: RouteOptions, handler: Handler): Route;
     put(path: string): FluentBuilder;
-    put(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder {
-        const fluentBuilder = new FluentBuilder(this, 'PUT', path);
-        
+    put(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder | Route {
         if (arg3) {
             const route = this.addRoute('PUT', path);
             route.options = arg2 as RouteOptions;
             route.handler = arg3;
+            return route;
         } else if (arg2) {
             const route = this.addRoute('PUT', path);
             if (typeof arg2 === 'function') {
                 route.handler = arg2;
+                return route;
             } else if ('json' in arg2 || 'text' in arg2 || 'upload' in arg2) {
                 route.routeConfig = arg2;
+                return route;
             } else {
                 route.options = arg2;
+                return route;
             }
         }
         
-        return fluentBuilder;
+        return new FluentBuilder(this, 'PUT', path);
     }
 
-    delete(path: string, config: RouteConfig): FluentBuilder;
-    delete(path: string, handler: Handler): FluentBuilder;
-    delete(path: string, options: RouteOptions, handler: Handler): FluentBuilder;
+    delete(path: string, config: RouteConfig): Route;
+    delete(path: string, handler: Handler): Route;
+    delete(path: string, options: RouteOptions, handler: Handler): Route;
     delete(path: string): FluentBuilder;
-    delete(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder {
-        const fluentBuilder = new FluentBuilder(this, 'DELETE', path);
-        
+    delete(path: string, arg2?: Handler | RouteConfig | RouteOptions, arg3?: Handler): FluentBuilder | Route {
         if (arg3) {
             const route = this.addRoute('DELETE', path);
             route.options = arg2 as RouteOptions;
             route.handler = arg3;
+            return route;
         } else if (arg2) {
             const route = this.addRoute('DELETE', path);
             if (typeof arg2 === 'function') {
                 route.handler = arg2;
+                return route;
             } else if ('json' in arg2 || 'text' in arg2 || 'upload' in arg2) {
                 route.routeConfig = arg2;
+                return route;
             } else {
                 route.options = arg2;
+                return route;
             }
         }
         
-        return fluentBuilder;
+        return new FluentBuilder(this, 'DELETE', path);
     }
 
-    private addRoute(method: string, path: string): Route {
+    addRoute(method: string, path: string): Route {
         const route = new Route(path, method, this);
         this.routes.push(route);
         return route;
@@ -807,10 +815,17 @@ class App implements AppInterface {
                         options
                     );
                 }
-            } else if (route.handlerId) {
+            } else if (route.handlerId || route.handler) {
                 // Level 1: Imperative Routes (JS Callback)
                 try {
-                    this.engine.registerRoute(route.method, enginePath, route.handlerId, options);
+                    // Ensure handler is registered
+                    if (!route.handlerId && route.handler) {
+                        route.handlerId = this.registerHandler(route.handler);
+                    }
+                    
+                    if (route.handlerId) {
+                        this.engine.registerRoute(route.method, enginePath, route.handlerId, options);
+                    }
                 } catch (e) {
                     console.error(`Failed to register route ${route.method} ${route.path}:`, e);
                 }
