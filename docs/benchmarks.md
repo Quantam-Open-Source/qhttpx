@@ -2,7 +2,20 @@
 
 This document contains performance benchmarks for QHTTPX, demonstrating its high-throughput and low-latency capabilities.
 
-## Test Environment
+## Linux Server Environment
+**Environment**: Linux, 12 vCPU, 10GB RAM
+**Test**: 60s, 100 connections, 50 pipelining
+
+| Framework | Req/Sec | Latency (Avg) | Multiplier |
+| :--- | :--- | :--- | :--- |
+| **Express** | 28,888 | 179.11 ms | 1.0x |
+| **Koa** | 33,168 | 156.81 ms | 1.15x |
+| **Fastify** | 40,760 | 125.75 ms | 1.41x |
+| **QHTTPX** | **111,828** | **45.25 ms** | **3.87x** |
+
+> *On a high-performance Linux server, QHTTPX serves over 111k requests per second, outperforming Fastify by nearly 3x and Express by nearly 4x.*
+
+## Windows Environment (Legacy)
 
 The benchmarks below were conducted on the following hardware configuration:
 
