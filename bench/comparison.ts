@@ -28,16 +28,23 @@ async function runBenchmark(name: string, port: number) {
             url: `http://localhost:${port}`,
             connections: 100,
             pipelining: 50,
-            duration: 60
+            duration: 60,
+            latency: {
+                percentiles: [1, 2.5, 50, 55, 97.5, 99]
+            }
         }, (err, result) => {
             if (err) {
                 console.error(err);
                 resolve({ requests: { average: 0, total: 0 } });
             } else {
                 console.log(`${name} Results:`);
-                console.log(`  Requests/sec: ${result.requests.average}`);
+                console.log(`  Requests/sec: ${result.requests.average.toFixed(2)} (StdDev: ${result.requests.stddev.toFixed(2)})`);
                 console.log(`  Total Requests: ${result.requests.total}`);
-                console.log(`  Latency (avg): ${result.latency.average} ms`);
+                console.log(`  Latency (avg): ${result.latency.average.toFixed(2)} ms`);
+                console.log(`  Latency (p50): ${result.latency.p50} ms`);
+                console.log(`  Latency (p55): ${result.latency.p55} ms`);
+                console.log(`  Latency (p99): ${result.latency.p99} ms`);
+                console.log(`  Latency (max): ${result.latency.max} ms`);
                 console.log(`  Throughput: ${(result.throughput.average / 1024 / 1024).toFixed(2)} MB/s`);
                 resolve(result);
             }

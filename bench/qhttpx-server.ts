@@ -25,14 +25,21 @@ async function runBenchmark() {
             url: `http://localhost:${PORT}`,
             connections: 1000,
             pipelining: 50,
-            duration: 40
+            duration: 40,
+            latency: {
+                percentiles: [1, 2.5, 50, 55, 97.5, 99]
+            }
         }, (err, result) => {
             if (err) {
                 console.error(err);
             } else {
                 console.log(`QHTTPX Results:`);
-                console.log(`  Requests/sec: ${result.requests.average}`);
-                console.log(`  Latency (avg): ${result.latency.average} ms`);
+                console.log(`  Requests/sec: ${result.requests.average.toFixed(2)} (StdDev: ${result.requests.stddev.toFixed(2)})`);
+                console.log(`  Latency (avg): ${result.latency.average.toFixed(2)} ms`);
+                console.log(`  Latency (p50): ${result.latency.p50} ms`);
+                console.log(`  Latency (p55): ${result.latency.p55} ms`);
+                console.log(`  Latency (p99): ${result.latency.p99} ms`);
+                console.log(`  Latency (max): ${result.latency.max} ms`);
                 console.log(`  Throughput: ${(result.throughput.average / 1024 / 1024).toFixed(2)} MB/s`);
                 resolve(result);
             }
