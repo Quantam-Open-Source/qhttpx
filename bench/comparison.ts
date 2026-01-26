@@ -26,9 +26,9 @@ async function runBenchmark(name: string, port: number) {
         console.log(`\nStarting benchmark for ${name} on port ${port}...`);
         const instance = autocannon({
             url: `http://localhost:${port}`,
-            connections: 10000,
-            pipelining: 10,
-            duration: 20
+            connections: 100,
+            pipelining: 50,
+            duration: 60
         }, (err, result) => {
             if (err) {
                 console.error(err);
