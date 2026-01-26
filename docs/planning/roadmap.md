@@ -1,99 +1,101 @@
-# qhttpx Roadmap: Path to v1.0
+# 🗺️ QHTTPX Technical Roadmap
 
-This document outlines the strategic roadmap for the `qhttpx` HTTP runtime, focusing on achieving deployment readiness, security, and a world-class "AI-Native" Developer Experience.
+This roadmap outlines the verified implementation status of the QHTTPX framework, structured by architectural layer. It reflects the "creation story" of the framework, from the low-level Rust engine up to the high-level developer tooling.
 
-## 🛑 Critical Priority: Security & Core Foundation
-**Status: � Completed**
+## �️ Phase 1: The Iron Foundation (Core Runtime)
+*Status: Production-Grade | Implemented in `core/src`*
 
-The current implementation relies on string interpolation for SQL queries, which is vulnerable to SQL Injection. This must be resolved before any production usage.
+The bedrock of QHTTPX is a high-performance, memory-safe execution environment built on Rust.
 
-- [x] **Core: Parameterized Query Support**
-    - Modify Rust `DatabaseManager::query` to accept parameters (`Vec<Value>`).
-    - Expose `query_with_params(sql, params)` via N-API to Node.js.
-    - Support both Postgres (`$1`) and SQLite (`?`) parameter syntaxes.
-- [x] **Fluent: Secure Query Generation**
-    - Rewrite `fluent.ts` to generate SQL with placeholders instead of injecting values.
-    - Remove all `replace(/'/g, "''")` manual escaping.
-- [x] **Type Safety**
-    - Remove `// @ts-ignore` usages in `fluent.ts` and controllers.
-    - Define proper `DatabaseContext` interface with generic return types.
+### Core Networking
+- [x] **Hyper 1.x Integration**: Built on top of Hyper's modern, asynchronous HTTP implementation.
+- [x] **Tokio Runtime**: Fully non-blocking I/O using the Tokio reactor.
+- [x] **Hybrid Architecture**: Zero-copy N-API bridge (`napi-rs`) between Node.js and Rust.
+- [x] **Native WebSocket Support**: Real-time bidirectional communication powered by `tokio-tungstenite`.
+    - Support for Rooms and Peer messaging.
+    - Native upgrade handling.
+- [x] **TLS/SSL Termination**: Built-in secure connection handling via `tokio-rustls`.
+- [x] **HTTP Compression**: Automatic Gzip and Brotli compression via `async-compression`.
 
-## 🚀 Phase 2: Fluent API Maturity
-**Status: � Completed**
-
-Expand the Fluent API to cover standard CRUD operations and common web patterns, reducing the need for "escape hatches" to raw code.
-
-- [x] **Complete CRUD**
-    - `update(table, { where, data })`: Secure update with whitelist.
-    - `delete(table, { where })`: Secure delete.
-    - `softDelete(table)`: Toggle a `deleted_at` timestamp instead of removing rows.
-- [x] **Data Access Enhancements**
-    - `paginate({ page, limit })`: Auto-append `LIMIT/OFFSET` and return metadata.
-    - `sort(field, direction)`: Safe `ORDER BY` generation.
-    - `select(fields[])`: Whitelist columns to return (security).
-- [x] **Logic & Control Flow**
-    - `hook('before', fn)`: Run logic before the main DB operation (e.g., set `updated_at`).
-    - `hook('after', fn)`: Run logic after (e.g., trigger email).
-    - `iff(condition, fn)`: Conditional execution chain.
-
-## 🧠 Phase 3: AI-Native & Auto-SQL
-**Status: ✅ Completed**
-
-Features designed to make `qhttpx` the best runtime for AI agents to write code for.
-
-- [x] **Auto-SQL Middleware**
-    - Automatically map URL query parameters (e.g., `?status=active&sort=created_desc`) to safe SQL clauses.
-    - Eliminate boilerplate for standard filtering/sorting.
-- [x] **Deterministic Context**
-    - Ensure `ctx` object passed to handlers is strictly typed and serializable.
-    - Provide "Context Snapshots" for AI debugging.
-- [x] **Self-Documenting Routes**
-    - `flow()` chains should auto-generate OpenAPI/Swagger specs without extra decorators.
-    - Runtime validation of inputs against generated specs.
-
-## 🛡️ Phase 4: Production Readiness
-**Status: ✅ Completed**
-
-- [x] **Observability**
-    - Structured JSON logging.
-    - Prometheus metrics endpoint (Request duration, DB latency, Error rates).
-- [x] **Resilience**
-    - Global Error Boundary (catch all unhandled exceptions).
-    - Graceful Shutdown (drain connections properly).
-- [x] **Migrations**
-    - Simple CLI tool for running SQL migrations (`up`/`down`).
+### Performance Primitives
+- [x] **Zero-Copy Buffer Management**: Efficient `Bytes` and `BoxBody` handling to minimize memory overhead.
+- [x] **In-Memory Caching**: High-concurrency `DashMap` storage for sub-millisecond data retrieval.
+- [x] **Distributed Rate Limiting**: Redis-backed `TrafficGovernor` for cluster-wide traffic control.
+- [x] **Global CORS**: Configurable Cross-Origin Resource Sharing policies handled at the network layer.
 
 ---
 
-## 📝 Implementation Notes
+## 🛡️ Phase 2: Data & Security Layer
+*Status: Hardened | Implemented in `core/src/database.rs` & `lib.rs`*
 
-### Security Standard
-All database operations MUST use the following pattern in the Core:
-```rust
-// Core (Rust)
-pub async fn query(&self, sql: String, params: Vec<serde_json::Value>) -> Result<String>
-```
+Security and data integrity are enforced natively before requests ever reach the JavaScript runtime.
 
-And in the Fluent Layer (TS):
-```typescript
-// Fluent (TS)
-const sql = "SELECT * FROM users WHERE id = $1";
-const params = [userId];
-await ctx.db.query(sql, params);
-```
+### Data Access
+- [x] **Polyglot Database Support**:
+    - **PostgreSQL**: Native async driver via `sqlx`.
+    - **SQLite**: Embedded high-performance database via `sqlx`.
+    - **MongoDB**: Document store support via `mongodb`.
+    - **Redis**: Key-value store for caching and rate limiting.
+- [x] **Parameterized Query Engine**: Protection against SQL Injection using native bind parameters (`$1`, `?`).
+- [x] **Connection Pooling**: Automatic management of database connections via `DatabaseManager`.
 
-### Auto-SQL Concept
-Instead of writing:
-```typescript
-app.get('/users', async (c) => {
-   const sql = `SELECT * FROM users WHERE age > ${c.query.age}`; // BAD
-   // ...
-});
-```
+### Security Guardrails
+- [x] **Native JWT Verification**: Token validation performed in Rust (`jsonwebtoken`) for zero-latency auth checks.
+- [x] **Schema Validation**: High-performance JSON Schema validation (`jsonschema`) compiled and cached in Rust.
+- [x] **Secure Uploads**: Streaming multipart file uploads handled via `multer` in Rust.
 
-We enable:
-```typescript
-app.flow('GET', '/users')
-   .autoFilter('users', ['age', 'status']) // Automatically maps query params safely
-   .respond();
-```
+---
+
+## 👩‍💻 Phase 3: The Developer Experience (Application Layer)
+*Status: Intuitive | Implemented in `src/fluent.ts` & `src/index.ts`*
+
+The user-facing API designed for joy, productivity, and type safety.
+
+### Fluent API
+- [x] **Chainable Interface**: Builder pattern for route definition (`.get().status().json()`).
+- [x] **Type-Safe Context**: Strongly typed `RequestContext` with inferred params and body.
+- [x] **Middleware Composition**: Easy logic reuse via `.use((ctx) => ...)` mechanism.
+- [x] **Declarative Features**:
+    - `.cache({ ttl: 60 })`: Define caching rules inline.
+    - `.rateLimit({ limit: 100 })`: Define throttle rules inline.
+    - `.auth('jwt')`: Attach security policies declaratively.
+    - `.slo(200)`: Set Service Level Objectives for routes.
+
+### Validation & Logic
+- [x] **Inline Validation**: `.validate({ email: 'email', age: 'int' })` helper.
+- [x] **Response Shaping**: Declarative status codes and response schemas.
+- [x] **Query Builders**: Helper methods for constructing database queries securely.
+
+---
+
+## �️ Phase 4: Operational Excellence (Tooling)
+*Status: Robust | Implemented in `src/cli.ts` & `core/src/server.rs`*
+
+Tools for building, deploying, and monitoring QHTTPX applications.
+
+### CLI & Migrations
+- [x] **QHTTPX CLI**: Unified command-line interface (`qhttpx`).
+- [x] **Migration System**:
+    - `migrate up` / `migrate down` commands.
+    - Support for `.sql` migration files.
+    - Migration tracking table (`_qhttpx_migrations`).
+- [x] **Environment Management**: Native `.env` file loading and parsing.
+
+### Observability
+- [x] **Prometheus Metrics**: Built-in atomic counters for:
+    - `http_requests_total`
+    - `http_active_connections`
+    - `http_requests_errors_total`
+    - `http_request_duration_ms_avg`
+- [x] **Structured Logging**: JSON-formatted logs via `tracing` for easy ingestion by log aggregators.
+- [x] **Graceful Shutdown**: Signal handling to ensure clean connection termination.
+
+---
+
+## 🚀 Phase 5: Future Scale (Upcoming)
+*Status: Planned*
+
+- [ ] **Cluster Mode**: Native Node.js cluster support for vertical scaling.
+- [ ] **OpenAPI Generation**: Auto-generating Swagger docs from Fluent API definitions.
+- [ ] **GraphQL Support**: Native integration for GraphQL execution.
+- [ ] **Edge Runtime Support**: Compatibility with WinterCG standards.
