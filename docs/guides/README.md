@@ -16,11 +16,11 @@ The best way to learn is often by reading code. We have a comprehensive set of e
 
 ### 📂 [Examples Folder](../../examples/)
 Contains focused, runnable scripts for specific features:
-- **Routing & Middleware**: `simple_server.ts`, `middleware_demo.ts`
+- **Routing & Middleware**: `hello.ts`, `demo.ts`, `middleware_demo.ts`
 - **Real-time**: `ws_demo.ts`
-- **Security**: `tls_demo.ts`, `cors_demo.ts`, `auth_demo.ts`
+- **Security**: `tls_demo.ts`, `cors_demo.ts`, `db_auth_demo.ts`
 - **Performance**: `cluster_demo.ts`, `http2_demo.ts`
-- **Data**: `postgres_demo.ts`, `mongo_demo.ts`, `upload_demo.ts`
+- **Data**: `mongo_demo.ts`, `db_auth_demo.ts`, `upload_demo.ts`
 
 ### 📱 [Sample App](../../sample-app/)
 A complete, production-ready application demonstrating how to structure a real-world QHTTPX project. It includes:
